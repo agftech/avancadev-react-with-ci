@@ -1,10 +1,11 @@
 import React from "react";
+import { Header } from "../Header";
 import "./index.css";
 
 function App() {
 	return (
 		<div className='App'>
-			<h1>Hello Crypto View</h1>
+			<Header />
 		</div>
 	);
 }
