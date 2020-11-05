@@ -1,5 +1,6 @@
 import { createChart, CrosshairMode } from "lightweight-charts";
 import * as React from "react";
+import { Legend } from "../Legend";
 
 import "./index.css";
 
@@ -36,5 +37,9 @@ export const Chart: React.FC<ChartProps> = (props) => {
 		});
 	}, []);
 
-	return <div className='Chart' ref={containerRef}></div>;
+	return (
+		<div className='Chart' ref={containerRef}>
+			<Legend legend='USD' />
+		</div>
+	);
 };
