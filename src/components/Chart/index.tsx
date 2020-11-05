@@ -1,4 +1,4 @@
-import { createChart, CrosshairMode } from "lightweight-charts";
+import { createChart, CrosshairMode, ISeriesApi } from "lightweight-charts";
 import * as React from "react";
 import { Legend } from "../Legend";
 
@@ -8,6 +8,9 @@ interface ChartProps {}
 
 export const Chart: React.FC<ChartProps> = (props) => {
 	const containerRef = React.useRef() as React.MutableRefObject<HTMLDivElement>;
+	const candleSeriesRef = React.useRef() as React.MutableRefObject<
+		ISeriesApi<"Candlestick">
+	>;
 	React.useEffect(() => {
 		const chart = createChart(containerRef.current, {
 			width: containerRef.current.clientWidth,
@@ -34,6 +37,14 @@ export const Chart: React.FC<ChartProps> = (props) => {
 			timeScale: {
 				borderColor: "#485c7b",
 			},
+		});
+		candleSeriesRef.current = chart.addCandlestickSeries({
+			upColor: "#4bffb5",
+			downColor: "#ff4976",
+			borderDownColor: "#ff4976",
+			borderUpColor: "#4bffb5",
+			wickDownColor: "#838ca1",
+			wickUpColor: "#838ca1",
 		});
 	}, []);
 
