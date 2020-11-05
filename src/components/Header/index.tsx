@@ -3,7 +3,9 @@ import { cryptoHttp } from "../../http";
 import { Coin } from "../Coin";
 import "./index.css";
 
-interface HeaderProps {}
+interface HeaderProps {
+	onSelected: (coin: string) => void;
+}
 
 interface Price {
 	[key: string]: { oldPrice: number; currentPrice: number };
@@ -16,6 +18,7 @@ const ALL_PRICES: Price = {
 };
 
 export const Header: React.FC<HeaderProps> = (props) => {
+	const { onSelected } = props;
 	const [prices, setPrices] = React.useState<Price>(ALL_PRICES);
 	React.useEffect(() => {
 		const intervals = Object.keys(ALL_PRICES).map((coin) => {
@@ -43,7 +46,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
 	return (
 		<div className='Header'>
 			{Object.keys(prices).map((coin) => (
-				<div onClick={() => {}}>
+				<div onClick={() => onSelected(coin)}>
 					<Coin
 						coin={coin}
 						oldPrice={prices[coin].oldPrice}

@@ -5,28 +5,60 @@ import { Legend } from "../Legend";
 
 import "./index.css";
 
-interface ChartProps {}
+interface ChartProps {
+	coin: string;
+}
 
 export const Chart: React.FC<ChartProps> = (props) => {
+	const { coin } = props;
 	const containerRef = React.useRef() as React.MutableRefObject<HTMLDivElement>;
 	const candleSeriesRef = React.useRef() as React.MutableRefObject<
 		ISeriesApi<"Candlestick">
 	>;
 	const [prices, setPrices] = React.useState<any[]>([]);
+	const [chartLoaded, setChartLoaded] = React.useState(false);
 
 	React.useEffect(() => {
-		cryptoHttp.get(`histoday?fsym=USD&tsym=BRL&limit=300`).then((response) => {
-			const prices = response.data.Data.map((row: any) => ({
-				time: row.time,
-				low: row.low,
-				high: row.high,
-				open: row.open,
-				close: row.close,
-				volume: row.volumefrom,
-			}));
-			setPrices(prices);
-		});
-	}, []);
+		const interval = setInterval(() => {
+			cryptoHttp
+				.get(`histominute?fsym=${coin}&tsym=BRL&limit=1`)
+				.then((response) => {
+					setPrices((prevState) => {
+						const price = response.data.Data[1];
+						const newPrice = {
+							time: price.time,
+							low: price.low,
+							high: price.high,
+							open: price.open,
+							close: price.close,
+							volume: price.volumefrom,
+						};
+						candleSeriesRef.current.update(newPrice);
+						return [...prevState, newPrice];
+					});
+				});
+		}, 60000);
+		return () => clearInterval(interval);
+	}, [coin]);
+
+	React.useEffect(() => {
+		if (!chartLoaded) {
+			return;
+		}
+		cryptoHttp
+			.get(`histoday?fsym=${coin}&tsym=BRL&limit=300`)
+			.then((response) => {
+				const prices = response.data.Data.map((row: any) => ({
+					time: row.time,
+					low: row.low,
+					high: row.high,
+					open: row.open,
+					close: row.close,
+					volume: row.volumefrom,
+				}));
+				setPrices(prices);
+			});
+	}, [coin, chartLoaded]);
 
 	React.useEffect(() => {
 		if (candleSeriesRef.current) {
@@ -69,11 +101,12 @@ export const Chart: React.FC<ChartProps> = (props) => {
 			wickDownColor: "#838ca1",
 			wickUpColor: "#838ca1",
 		});
+		setChartLoaded(true);
 	}, []);
 
 	return (
 		<div className='Chart' ref={containerRef}>
-			<Legend legend='USD' />
+			<Legend legend={coin} />
 		</div>
 	);
 };
