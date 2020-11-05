@@ -1,5 +1,6 @@
 import { createChart, CrosshairMode, ISeriesApi } from "lightweight-charts";
 import * as React from "react";
+import { cryptoHttp } from "../../http";
 import { Legend } from "../Legend";
 
 import "./index.css";
@@ -11,6 +12,28 @@ export const Chart: React.FC<ChartProps> = (props) => {
 	const candleSeriesRef = React.useRef() as React.MutableRefObject<
 		ISeriesApi<"Candlestick">
 	>;
+	const [prices, setPrices] = React.useState<any[]>([]);
+
+	React.useEffect(() => {
+		cryptoHttp.get(`histoday?fsym=USD&tsym=BRL&limit=300`).then((response) => {
+			const prices = response.data.Data.map((row: any) => ({
+				time: row.time,
+				low: row.low,
+				high: row.high,
+				open: row.open,
+				close: row.close,
+				volume: row.volumefrom,
+			}));
+			setPrices(prices);
+		});
+	}, []);
+
+	React.useEffect(() => {
+		if (candleSeriesRef.current) {
+			candleSeriesRef.current.setData(prices);
+		}
+	}, [prices]);
+
 	React.useEffect(() => {
 		const chart = createChart(containerRef.current, {
 			width: containerRef.current.clientWidth,
