@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Coin } from "../Coin";
 import "./index.css";
 
 interface HeaderProps {}
@@ -6,7 +7,7 @@ interface HeaderProps {}
 export const Header: React.FC<HeaderProps> = (props) => {
 	return (
 		<div className='Header'>
-			<h1>Hello Header</h1>
+			<Coin coin='BTC' oldPrice={0} currentPrice={10} />
 		</div>
 	);
 };
